@@ -1,0 +1,6 @@
+Place the templates you want Tiddly Speck to be able to use in this folder.
+To create a template:
+    1. Create a folder inside the templates folder with the name of the template you want to create.
+        E.g. /blah/templates/my_template/
+    2. Create the template as an index.html file inside the template folder.
+        E.g. /blah/templates/my_template/index.html
