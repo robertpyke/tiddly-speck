@@ -70,7 +70,7 @@ Author: Robert Pyke
         // the sites folder for a directory by the name the user has provided.
         function ValidateSiteId()
         {
-            global $id, $curr_dir, $site_id_dir_path;
+            global $id, $curr_dir, $site_id_dir_path, $project_name;
  
             $sites_dir_to_create = $curr_dir."/sites/";
             $sites_dir_exists = file_exists($sites_dir_to_create);
@@ -105,7 +105,7 @@ Author: Robert Pyke
         // and an index.html inside.
         function ValidateTemplate()
         {
-            global $template, $curr_dir, $chosen_template_dir_path;
+            global $template, $curr_dir, $chosen_template_dir_path, $project_name;
  
             $templates_dir = $curr_dir."/templates/";
             $templates_dir_exists = file_exists($templates_dir);
