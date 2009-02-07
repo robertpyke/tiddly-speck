@@ -184,7 +184,7 @@ Author: Robert Pyke
         $idValid = ValidateSiteId();
         $passwordValid = ValidatePasswords();
         $templateValid = ValidateTemplate();
-        if (!$idValid or !$passwordValid or !$templateValide) {
+        if (!$idValid || !$passwordValid || !$templateValide) {
             echo "<h3>Site creation failed.</h3>";
         } else {
             echo "<h3>Validation successfully completed, creating site.</h3>";
