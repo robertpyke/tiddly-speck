@@ -24,7 +24,7 @@ Author: Robert Pyke
         $project_name_URL = $server_URL."robert/".$project_name."/";
         $sites_url = $project_name_URL."sites/";
 
-        $curr_dir = getcwd() or die("Can't detect current directory.");       // False if we couldn't get the current directory.
+        $curr_dir = getcwd();   // False if we couldn't get the current directory.
         if (!$curr_dir) {
             echo "<p>php couldn't get the current directory, this is likely caused ";
             echo "by an improper ".$project_name." install.</p>";
@@ -75,7 +75,7 @@ Author: Robert Pyke
             if (!$sites_dir_exists) {
                 // If this is the first time a site has ever been required to be built,
                 // create the sites folder.
-                $made_dir = mkdir($sites_dir_to_create) or die("Can't create the sites directory.");
+                $made_dir = mkdir($sites_dir_to_create);
                 if (!$made_dir) {
                     echo "<p>php couldn't create the sites directory, this is likely caused ";
                     echo "by an improper ".$project_name." install.</p>";
@@ -109,7 +109,7 @@ Author: Robert Pyke
             $templates_dir_exists = file_exists($templates_dir);
             if (!$templates_dir_exists) {
                 // If the templates directory does not exist, create it.
-                $made_dir = mkdir($templates_dir) or die("Can't create the templates directory.");
+                $made_dir = mkdir($templates_dir);
                 if (!$made_dir) {
                     echo "<p>php couldn't create the templates directory, this is likely caused ";
                     echo "by an improper ".$project_name." install.</p>";
