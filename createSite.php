@@ -175,7 +175,7 @@ Author: Robert Pyke
         {
             // Use the site $id to generate the user's site at $site_file_path.
             // Use the template to create the initial copy of the user's wiki.
-            global $id, $password, $site_id_dir_path, $chosen_template_dir_path;
+            global $id, $password, $site_id_dir_path, $chosen_template_dir_path, $project_name;
             // This function must:
             // 1. Create the user's directory.
             // 2. Add the upload plugins.
@@ -188,6 +188,11 @@ Author: Robert Pyke
 
             // 1. Create the user's directory.
             $made_site_dir = mkdir($site_id_dir_path);
+            if (!$made_site_dir) {
+                echo "<p>Couldn't create the user's site directory. This was ".
+                "likely caused by a bad ".$project_name." install.</p>";
+                return false;
+            }
 
             // 2. Copy in the .php files for the upload file and uploadTiddler plugins.
             // Copy the original file store.php
