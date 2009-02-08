@@ -18,7 +18,7 @@ Author: Robert Pyke
         $password_conf = $_POST["password_conf"] or die("<h3>Didn't receive password_conf in POST</h3></body></html>");
 
         // TODO - Add template support, for now assume that the template is default.
-        $template = "default";
+        $template = "test tiddly wiki";
         $site_id_dir_path = "";
         $chosen_template_dir_path = "";
         $project_name_URL = ScriptsFolderURL();
@@ -178,19 +178,43 @@ Author: Robert Pyke
             global $id, $password, $site_id_dir_path, $chosen_template_dir_path;
             // This function must:
             // 1. Create the user's directory.
-            // 2. Create a string copy of the template.
-            // 3. Manipulate the template string to add the upload plugins.
-            // 4. Create the user's site using the modified template string.
+            // 2. Add the upload plugins.
+            // 3. Create a string copy of the template.
+            // 4. Manipulate the template string to add the upload plugins.
+            // 5. Create the user's site using the modified template string.
+
+            // TODO add the if statements into the code here to make sure that the
+            // directories were created and that the files were copied in successfully in
 
             // 1. Create the user's directory.
             $made_site_dir = mkdir($site_id_dir_path);
 
-            // 2. Create a string copy of the template.
+            // 2. Copy in the .php files for the upload file and uploadTiddler plugins.
+            // Copy the original file store.php
+            $store_php_as_a_string = file_get_contents(GetCurrentDirectory()."/store.php");
+            // Insert the USERNAME into the file string
+            $store_php_as_a_string = str_replace("___USERNAME___", $id, $store_php_as_a_string);
+            // Insert the PASSWORD into the file string
+            $store_php_as_a_string = str_replace("___PASSWORD___", $password, $store_php_as_a_string);
+            $store_dest_file_path = $site_id_dir_path."store.php";
+            $store_dest_file_handle = fopen($store_dest_file_path, "w+"); // Get a handle on the file with a w+ read & write capabilities
+            $wrote_store_file = fwrite($store_dest_file_handle, $store_php_as_a_string);
+
+            $store_tiddler_php_as_a_string = file_get_contents(GetCurrentDirectory()."/storeTiddler.php");
+            // Insert the USERNAME into the file string
+            $store_tiddler_php_as_a_string = str_replace("___USERNAME___", $id, $store_tiddler_php_as_a_string);
+            // Insert the PASSWORD into the file string
+            $store_tiddler_php_as_a_string = str_replace("___PASSWORD___", $password, $store_tiddler_php_as_a_string);
+            $store_tiddler_dest_file_path = $site_id_dir_path."storeTiddler.php";
+            $store_tiddler_dest_file_handle = fopen($store_tiddler_dest_file_path, "w+"); // Get a handle on the file with a w+ read & write capabilities
+            $wrote_store_tiddler_file = fwrite($store_tiddler_dest_file_handle, $store_tiddler_php_as_a_string);
+
+            // 3. Create a string copy of the template.
             $template_file_as_a_string = file_get_contents($chosen_template_dir_path."index.html");
 
-            // TODO 3. Manipulate the template string to add the upload plugins.
+            // TODO 4. Manipulate the template string to add the upload plugins.
 
-            // 4. Create the user's site using the modified template string.
+            // 5. Create the user's site using the modified template string.
             //
             // The following fopen mode may need to include 'b', e.g. mode= 'w+b'.
             // Windows requires b if it is a binary file not a text file.
@@ -199,7 +223,7 @@ Author: Robert Pyke
             $dest_file_path = $site_id_dir_path."index.html";
             $dest_file_handle = fopen($dest_file_path, "w+"); // Get a handle on the file with a w+ read & write capabilities
             $wrote_file = fwrite($dest_file_handle, $template_file_as_a_string);
-
+            
             return true;
         }// end CreateSite
 
