@@ -10,7 +10,7 @@ Author: Robert Pyke
 <body>
 <?php
         $project_name = "TiddlySpeck";
- 
+
         // Lookup each of the POST variables.
         // Bail if any of the requires POST variables are missing.
         $id = $_POST["id"] or die("<h3>Didn't receive site id in POST</h3></body></html>");
@@ -21,20 +21,24 @@ Author: Robert Pyke
         $template = "default";
         $site_id_dir_path = "";
         $chosen_template_dir_path = "";
-        $server_URL = serverURL()."/";
-        // TODO - Remove this statically defined path. This is currently for testing purposes.
-        $project_name_URL = $server_URL."robert/".$project_name."/";
+        $project_name_URL = ScriptsFolderURL();
         $sites_url = $project_name_URL."sites/";
- 
-        $curr_dir = getcwd(); // False if we couldn't get the current directory.
-        if (!$curr_dir) {
-            echo "<p>php couldn't get the current directory, this is likely caused ";
-            echo "by an improper ".$project_name." install.</p>";
-            return false;
-        }
- 
+
+        // Gets the current directory, dies if can't get directory.
+        function GetCurrentDirectory() {
+            global $project_name;
+            
+            $curr_dir = getcwd(); // False if we couldn't get the current directory.
+            if (!$curr_dir) {
+                die ("<p>php couldn't get the current directory, this is likely caused ".
+                    "by an improper ".$project_name." install.</p></body></html>");
+            } else  {
+                return $curr_dir;
+            }
+        }// end GetCurrentDirectory
+
         // Gets the server URL
-        function serverURL() {
+        function ServerURL() {
             $serverURL = 'http';
             if ($_SERVER["HTTPS"] == "on") {$serverURL .= "s";}
             $serverURL .= "://";
@@ -44,13 +48,35 @@ Author: Robert Pyke
                 $serverURL .= $_SERVER["SERVER_NAME"];
             }
             return $serverURL;
+        }// end ServerURL
+
+        // Returns the URL of this script.
+        function ScriptURL() {
+            return ServerURL().$_SERVER["PHP_SELF"];
         }
+
+        // Returns the URL to the folder in which this script is executing.
+        // E.g
+        //  If the script is running at: http://example.com/foo/test.php
+        //  This will return http://example.com/foo/
+        function ScriptsFolderURL() {
+            global $project_name;
+            $script_URL = ServerURL().$_SERVER["PHP_SELF"];
+            if (ereg("([^/]*\/)+", $script_URL, $regs)) {            // Capture all characters up to and including the last forward-slash.
+                return $regs[0];
+            } else {
+                // This should never happen.
+                die("<p>".$project_name." Bug. Could not detect the directory ".
+                    "in which the current php script is being run.</p></body></html>");
+            }
+        }// end ScriptsFolderURL
+
         // Confirm that the passwords match.
         function ValidatePasswords()
         {
             // Use the password global variables we received from the post.
             global $password, $password_conf;
- 
+
             if ($password == $password_conf) {
                 if (strlen($password) == 0) {
                     echo "<p>No password provided.</p>";
@@ -64,15 +90,15 @@ Author: Robert Pyke
                 return false;
             }
         }// end ValidatePasswords
- 
+
         // To validate the site id, all we need to do is check if we
         // have already created a site by that name. So, check
         // the sites folder for a directory by the name the user has provided.
         function ValidateSiteId()
         {
-            global $id, $curr_dir, $site_id_dir_path, $project_name;
- 
-            $sites_dir_to_create = $curr_dir."/sites/";
+            global $id, $site_id_dir_path, $project_name;
+
+            $sites_dir_to_create = GetCurrentDirectory()."/sites/";
             $sites_dir_exists = file_exists($sites_dir_to_create);
             if (!$sites_dir_exists) {
                 // If this is the first time a site has ever been required to be built,
@@ -98,16 +124,16 @@ Author: Robert Pyke
                 }
             }
         }// end ValidateSiteId
- 
+
         // To validate the template, all we need to do is check if we
         // have a template in our templates folder by that name. So, check
         // the templates folder for a directory with the provided template's name
         // and an index.html inside.
         function ValidateTemplate()
         {
-            global $template, $curr_dir, $chosen_template_dir_path, $project_name;
- 
-            $templates_dir = $curr_dir."/templates/";
+            global $template, $chosen_template_dir_path, $project_name;
+
+            $templates_dir = GetCurrentDirectory()."/templates/";
             $templates_dir_exists = file_exists($templates_dir);
             if (!$templates_dir_exists) {
                 // If the templates directory does not exist, create it.
@@ -143,7 +169,7 @@ Author: Robert Pyke
                 }
             }
         }// end ValidateTemplate
- 
+
         // Create the user's site.
         function CreateSite()
         {
@@ -155,15 +181,15 @@ Author: Robert Pyke
             // 2. Create a string copy of the template.
             // 3. Manipulate the template string to add the upload plugins.
             // 4. Create the user's site using the modified template string.
- 
+
             // 1. Create the user's directory.
             $made_site_dir = mkdir($site_id_dir_path);
- 
+
             // 2. Create a string copy of the template.
             $template_file_as_a_string = file_get_contents($chosen_template_dir_path."index.html");
-            
+
             // TODO 3. Manipulate the template string to add the upload plugins.
- 
+
             // 4. Create the user's site using the modified template string.
             //
             // The following fopen mode may need to include 'b', e.g. mode= 'w+b'.
@@ -173,14 +199,14 @@ Author: Robert Pyke
             $dest_file_path = $site_id_dir_path."index.html";
             $dest_file_handle = fopen($dest_file_path, "w+"); // Get a handle on the file with a w+ read & write capabilities
             $wrote_file = fwrite($dest_file_handle, $template_file_as_a_string);
-            
+
             return true;
         }// end CreateSite
- 
+
         // *************
         // Start main
         // *************
- 
+
         if (!ValidateSiteId() or !ValidatePasswords() or !ValidateTemplate()) {
             echo "<h3>Site creation failed.</h3>";
         } else {
@@ -197,7 +223,7 @@ Author: Robert Pyke
                 echo "<p>Your site is available at: <a href=".$users_site_url.">".$users_site_url."</a>.</p>";
             }
         }
- 
+
         // *************
         // End main
         // *************
