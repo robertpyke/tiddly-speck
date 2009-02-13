@@ -1,0 +1,4 @@
+To setup tiddly-speck:
+1. Download the .zip distribution of this project.
+2. Unzip your .zip onto a php enabled web server.
+3. Make sure that the "sites" folder is writable.
